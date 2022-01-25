@@ -35,17 +35,42 @@ class Fourier(Basis):
             raise NotImplementedError("Can only perform transforms for float64 or complex128")
 
     def _transform_to_grid_complex(self, data, axis, scale):
-        pass
+        if scale == 1:
+            grid_data = scipy.fft.ifft(self.data)
+        elif scale > 1:
+            coeff_data = np.zeros(self.N * scale)
+            first_half_data = data[0:(self.N/2)]
+            second_half_data = data[-(self.N/2 - 1):]
+            coeff_data[0:(self.N/2)] = first_half_data
+            coeff_data[-(self.N/2 - 1):] = second_half_data
+            grid_data = scipy.fft.ifft(coeff_data)
+        self.data = grid_data
 
     def _transform_to_coeff_complex(self, data, axis):
-        pass
+        self.data = scipy.fft.fft(self.data)
 
     def _transform_to_grid_real(self, data, axis, scale):
-        pass
-
+        complex_data = np.zeros(self.N//2+1, dtype=np.complex128)
+        complex_data[:(self.N/2)].real = self.data[::2]
+        complex_data[:(self.N/2)].imag = self.data[1::2]
+        if scale == 1:
+            grid_data = scipy.fft.irfft(complex_data)
+        elif scale > 1:
+            expanded_complex_data = np.zeros(scale*self.N//2+1, dtype=np.complex128)
+            first_half_data = complex_data[0:(self.N/4)]
+            second_half_data = complex_data[-(self.N/4 - 1):]
+            expanded_complex_data[0:(self.N/4)] = first_half_data
+            expanded_complex_data[-(self.N/4 - 1):] = second_half_data
+            grid_data = scipy.fft.irfft(expanded_complex_data)
+        self.data = grid_data
+            
+            
     def _transform_to_coeff_real(self, data, axis):
-        pass
-
+            coeffs = scipy.fft.rfft(self.data)
+            coeff_data = np.zeros(self.N)
+            coeff_data[::2] = coeffs.real[:(self.N/2)]
+            coeff_data[1::2] = coeffs.imag[:(self.N/2)]
+            self.data = coeff_data
 
 class Domain:
 
