@@ -38,8 +38,6 @@ def test_Fourier_Real_1D_GCG(N, scale):
     f0 = np.copy(f.data)
     f.require_coeff_space()
     f.require_grid_space(scales=scale)
-    print(f.data[0:10])
-    print(f0[0:10])
     assert np.allclose(f.data, f0)
 
 @pytest.mark.parametrize('N', [64])
@@ -55,8 +53,6 @@ def test_Fourier_Complex_1D_CGC(N, scale):
     f0 = np.copy(f.data)
     f.require_grid_space(scales=scale)
     f.require_coeff_space()
-    print(f.data[:10])
-    print(f0[:10])
     assert np.allclose(f.data, f0)
 
 @pytest.mark.parametrize('N', [64])
@@ -121,7 +117,6 @@ def test_Fourier_Real_normalizationC(N, scale):
     f.data = -np.sin(5*x)
     f.require_coeff_space()
     f0 = np.zeros(f.data.shape)
-    print(f.data[11])
     f0[11] = 1
     assert np.allclose(f.data, f0)
 
